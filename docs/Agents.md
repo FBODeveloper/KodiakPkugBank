@@ -14,6 +14,19 @@
   - `KodiakPlugBank.Tests` — xUnit (26 testes): casos de uso com fakes, PlugBankApiClient (desserialização, headers, erros) e mapeamento de variáveis de ambiente.
 - Pacotes: Dapper 2.1.79, Npgsql 10.0.3, Microsoft.OpenApi 2.7.5 (correção CVE-2026-49451), Swashbuckle.AspNetCore 10.2.3.
 - Documentação de uso via Swagger UI (somente em desenvolvimento): `/swagger` (UI) e `/swagger/v1/swagger.json` (JSON gerado pelo Swashbuckle). Substituiu o `MapOpenApi` nativo (`/openapi`). O middleware libera `/swagger` e `/openapi` como públicos; demais rotas exigem `X-Api-Key`.
+- Swagger UI com esquema de segurança "ApiKey" configurado (`SecuritySchemeType.ApiKey`, header `X-Api-Key`) — botão "Authorize" permite testar os endpoints informando a chave. Implementação usa `OpenApiSecuritySchemeReference` (Microsoft.OpenApi 2.x, Swashbuckle 10): `options.AddSecurityRequirement(document => new OpenApiSecurityRequirement { { new OpenApiSecuritySchemeReference("ApiKey", document), [] } })`.
+
+### Apikey fixa do KodiakERP (validação)
+- Chave fixa entregue ao cliente (NUNCA armazenar em texto puro): `kdk_live_8T9hV2qLmN7xP4sRwY5ZaBcDeFgHiJkLmNoPqRsTuVwXyZ123456`.
+- **No Swagger** (UI de desenvolvimento): clicar em **Authorize** e informar no campo **apiKey** (value) exatamente:
+  `kdk_live_8T9hV2qLmN7xP4sRwY5ZaBcDeFgHiJkLmNoPqRsTuVwXyZ123456`
+- SHA-256 real da chave armazenado na tabela `apikey_fixa` (colunas `hash_sha256` CHAR(64) UNIQUE, `descricao`, `ativo`, `criado_em`): `d7944e9b351a320a612e659fc009e8d54dfc2be0b77d0b5f1b63d2a31c5b32a3`.
+  - ATENÇÃO: os hashes `6e3f4c7a...` e `8d7fbfd7...` que o usuário colou em mensagens anteriores NÃO correspondem à chave; o correto é o `d794...` calculado e validado em `docs` (vetor `sha256('abc')`).
+- Tabela e seed idempotente adicionados ao `KodiakPlugBank.Infrastructure/Scripts/schema.sql` (aplicado automaticamente pelo SchemaInitializer).
+- `IApikeyFixaRepository` (Core) + `ApikeyFixaRepository` Dapper (Infrastructure) com `ExisteAtivaAsync(hashSha256)`.
+- `AutenticarApikeyFixaUseCase` (Application) calcula SHA-256 da chave recebida (UTF-8, lowercase hex) e valida contra o hash armazenado.
+- `ApiKeyMiddleware`: valida primeiro a apikey fixa (não define pagador no contexto); se não validar, tenta autenticar por pagador (`ChaveKodiakExtrato`) — retrocompatibilidade.
+- 4 novos testes em `Tests/UseCases/AutenticarApikeyFixaUseCaseTests.cs` (total de 32 testes).
 
 ### Segurança (proteção contra DDoS) — adicionado em 2026-08-01
 - Rate limiting nativo (`Microsoft.AspNetCore.RateLimiting`, janela deslizante, partição por IP): política global 100 req/10s e política `bootstrap` (POST /api/v1/payer) 10 req/60s. Resposta 429 com `Retry-After`. Config em `appsettings.json` → `RateLimiting` (classe `KodiakPlugBank.Api/Security/RateLimitingExtensions.cs`).

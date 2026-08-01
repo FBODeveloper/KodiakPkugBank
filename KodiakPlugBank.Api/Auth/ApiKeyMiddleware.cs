@@ -14,7 +14,10 @@ public class ApiKeyMiddleware
         _masterApiKey = configuration["Security:MasterApiKey"];
     }
 
-    public async Task InvokeAsync(HttpContext context, AutenticarPagadorUseCase autenticarPagador)
+    public async Task InvokeAsync(
+        HttpContext context,
+        AutenticarPagadorUseCase autenticarPagador,
+        AutenticarApikeyFixaUseCase autenticarApikeyFixa)
     {
         var path = context.Request.Path.Value ?? string.Empty;
         var method = context.Request.Method;
@@ -44,6 +47,13 @@ public class ApiKeyMiddleware
                 return;
             }
 
+            await _next(context);
+            return;
+        }
+
+        var resultadoApikeyFixa = await autenticarApikeyFixa.ExecuteAsync(apiKey, context.RequestAborted);
+        if (resultadoApikeyFixa.IsSuccess)
+        {
             await _next(context);
             return;
         }

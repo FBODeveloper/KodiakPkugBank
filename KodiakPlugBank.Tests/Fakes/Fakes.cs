@@ -64,6 +64,14 @@ public class FakeContaBancariaRepository : IContaBancariaRepository
         => Task.CompletedTask;
 }
 
+public class FakeApikeyFixaRepository : IApikeyFixaRepository
+{
+    public HashSet<string> Hashes { get; } = new();
+
+    public Task<bool> ExisteAtivaAsync(string hashSha256, CancellationToken cancellationToken = default)
+        => Task.FromResult(Hashes.Contains(hashSha256));
+}
+
 public class FakePlugBankApi : IPlugBankApi
 {
     public Func<CreatePayerRequest, PlugBankCredentials, Task<CreatePayerResponse>>? PayerHandler { get; set; }

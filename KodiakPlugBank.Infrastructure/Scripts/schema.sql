@@ -53,3 +53,18 @@ CREATE INDEX IF NOT EXISTS ix_conta_bancaria_id_pagador ON conta_bancaria (id_pa
 CREATE UNIQUE INDEX IF NOT EXISTS ux_conta_bancaria_account_hash
     ON conta_bancaria (account_hash)
     WHERE account_hash IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS apikey_fixa (
+    id            SERIAL PRIMARY KEY,
+    hash_sha256   CHAR(64)     NOT NULL UNIQUE,
+    descricao     VARCHAR(250),
+    ativo         BOOLEAN      NOT NULL DEFAULT TRUE,
+    criado_em     TIMESTAMP    NOT NULL DEFAULT NOW()
+);
+
+INSERT INTO apikey_fixa (hash_sha256, descricao)
+SELECT 'd7944e9b351a320a612e659fc009e8d54dfc2be0b77d0b5f1b63d2a31c5b32a3', 'apikey fixa KodiakERP (kdk_live)'
+WHERE NOT EXISTS (
+    SELECT 1 FROM apikey_fixa
+    WHERE hash_sha256 = 'd7944e9b351a320a612e659fc009e8d54dfc2be0b77d0b5f1b63d2a31c5b32a3'
+);

@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<SchemaInitializer>();
         services.AddScoped<IPagadorRepository, PagadorRepository>();
         services.AddScoped<IContaBancariaRepository, ContaBancariaRepository>();
+        services.AddScoped<IApikeyFixaRepository, ApikeyFixaRepository>();
 
         services.AddHttpClient<IPlugBankApi, PlugBankApiClient>((sp, client) =>
         {

@@ -46,11 +46,26 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Description = "API de consulta a extratos bancários via Open Finance (integração com a TecnoSped PlugBank)."
     });
+
+    options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    {
+        Name = "X-Api-Key",
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Description = "Informe a chave de acesso (X-Api-Key) do pagador para autenticar. " +
+                      "Para o bootstrap (POST /api/v1/payer) informe a chave mestre Security:MasterApiKey."
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        { new OpenApiSecuritySchemeReference("ApiKey", document), [] }
+    });
 });
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddSecurityRateLimiting(builder.Configuration);
 
 builder.Services.AddScoped<AutenticarPagadorUseCase>();
+builder.Services.AddScoped<AutenticarApikeyFixaUseCase>();
 builder.Services.AddScoped<CriarPagadorUseCase>();
 builder.Services.AddScoped<ListarPagadoresUseCase>();
 builder.Services.AddScoped<ObterPagadorUseCase>();
