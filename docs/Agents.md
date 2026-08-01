@@ -15,6 +15,15 @@
 - Pacotes: Dapper 2.1.79, Npgsql 10.0.3, Microsoft.OpenApi 2.7.5 (correção CVE-2026-49451), Swashbuckle.AspNetCore 10.2.3.
 - Documentação de uso via Swagger UI (somente em desenvolvimento): `/swagger` (UI) e `/swagger/v1/swagger.json` (JSON gerado pelo Swashbuckle). Substituiu o `MapOpenApi` nativo (`/openapi`). O middleware libera `/swagger` e `/openapi` como públicos; demais rotas exigem `X-Api-Key`.
 
+### Segurança (proteção contra DDoS) — adicionado em 2026-08-01
+- Rate limiting nativo (`Microsoft.AspNetCore.RateLimiting`, janela deslizante, partição por IP): política global 100 req/10s e política `bootstrap` (POST /api/v1/payer) 10 req/60s. Resposta 429 com `Retry-After`. Config em `appsettings.json` → `RateLimiting` (classe `KodiakPlugBank.Api/Security/RateLimitingExtensions.cs`).
+- Forwarded Headers habilitado (`X-Forwarded-For` + `X-Forwarded-Proto`) para enxergar o IP real do cliente atrás de proxy/CDN. `KnownProxies`/`KnownNetworks` configuráveis em `appsettings.json` → `ForwardedHeaders` (usar faixas de IP oficiais do proxy em produção; senão o header pode ser falsificado).
+- Limites do Kestrel em `appsettings.json` → `Kestrel:Limits`: `MaxRequestBodySize` 10MB, `MaxConcurrentConnections` 500, `MaxConcurrentUpgradedConnections` 100, `KeepAliveTimeout` 30s, `RequestHeadersTimeout` 5s, `MinRequestBodyDataRate`/`MinResponseDataRate` 240B/s (proteção contra slowloris).
+- Middleware `SecurityHeadersMiddleware` adiciona `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer` em todas as respostas.
+- Ordem do pipeline: `UseForwardedHeaders → SecurityHeaders → Swagger(dev) → UseRateLimiter → ApiKeyMiddleware → Endpoints`.
+- Endpoints e rotas: `POST /api/v1/payer` usa `RequireRateLimiting("bootstrap")`.
+- Documentação completa: `docs/ConfiguracaoSeguranca.md`.
+
 ### Banco de dados
 - Postgres local: database `kodiak_plugbank` criado automaticamente (connection: localhost:5432, postgres / 123!asd).
 - Tabelas `pagador` e `conta_bancaria` criadas via `KodiakPlugBank.Infrastructure/Scripts/schema.sql` (EmbeddedResource).
@@ -43,6 +52,7 @@
   de ambiente `Database__ConnectionString`, verificação e troubleshooting).
 - `docs/ProjetoKodiakPlugBank.md` — visão geral e funções do projeto.
 - `docs/IntegracaoPlugBankTecnoSped.md` — rotas da API PlugBank e variáveis de ambiente de autenticação.
+- `docs/ConfiguracaoSeguranca.md` — proteção contra DDoS e configuração de produção (rate limiting, proxies, Kestrel).
 
 ### Pendências / próximos passos
 - Configurar CnpjSh/TokenSh reais da TecnoSpeed e chave mestre antes de produção.

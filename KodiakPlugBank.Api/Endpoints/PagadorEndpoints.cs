@@ -1,6 +1,8 @@
 using KodiakPlugBank.Api.Auth;
+using KodiakPlugBank.Api.Security;
 using KodiakPlugBank.Application.UseCases.Pagador;
 using KodiakPlugBank.Infrastructure.Options;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 
 namespace KodiakPlugBank.Api.Endpoints;
@@ -24,8 +26,10 @@ public static class PagadorEndpoints
         })
         .WithName("CreatePayer")
         .WithSummary("Cadastra um pagador na PlugBank e no banco local.")
+        .RequireRateLimiting(PolicyNames.Bootstrap)
         .Produces<PagadorResponse>(StatusCodes.Status201Created)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status429TooManyRequests)
         .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapGet("/", async (
