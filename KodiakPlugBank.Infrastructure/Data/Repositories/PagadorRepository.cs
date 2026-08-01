@@ -63,16 +63,6 @@ public class PagadorRepository : IPagadorRepository
         return row is null ? null : Map(row);
     }
 
-    public async Task<Pagador?> GetByChaveKodiakAsync(string chaveKodiak, CancellationToken cancellationToken = default)
-    {
-        using var conn = _factory.CreateConnection();
-        var row = await conn.QueryFirstOrDefaultAsync<PagadorRow>(
-            new CommandDefinition($"""
-                SELECT {SelectColumns} FROM pagador WHERE chave_kodiak_extrato = @ChaveKodiak;
-                """, new { ChaveKodiak = chaveKodiak }, cancellationToken: cancellationToken));
-        return row is null ? null : Map(row);
-    }
-
     public async Task<IEnumerable<Pagador>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var conn = _factory.CreateConnection();

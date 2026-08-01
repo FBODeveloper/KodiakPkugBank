@@ -11,7 +11,7 @@
   - `KodiakPlugBank.Application` — casos de uso (CriarPagador, ListarPagadores, ObterPagador, AutenticarPagador, CriarConta, ListarContas, CriarExtrato, ObterExtrato) + Result/Result<T>.
   - `KodiakPlugBank.Infrastructure` — Dapper + Npgsql (repositórios, DbConnectionFactory, SchemaInitializer), cliente HTTP PlugBankApiClient, options (DatabaseOptions, PlugBankOptions), DI (AddInfrastructure).
   - `KodiakPlugBank.Api` — Minimal API: middleware de autenticação via apikey (header `X-Api-Key`), endpoints `/api/v1/payer`, `/api/v1/account`, `/api/v1/statement/openfinance`, schema automático na inicialização.
-  - `KodiakPlugBank.Tests` — xUnit (26 testes): casos de uso com fakes, PlugBankApiClient (desserialização, headers, erros) e mapeamento de variáveis de ambiente.
+  - `KodiakPlugBank.Tests` — xUnit (25 testes): casos de uso com fakes, PlugBankApiClient (desserialização, headers, erros) e mapeamento de variáveis de ambiente.
 - Pacotes: Dapper 2.1.79, Npgsql 10.0.3, Microsoft.OpenApi 2.7.5 (correção CVE-2026-49451), Swashbuckle.AspNetCore 10.2.3.
 - Documentação de uso via Swagger UI (somente em desenvolvimento): `/swagger` (UI) e `/swagger/v1/swagger.json` (JSON gerado pelo Swashbuckle). Substituiu o `MapOpenApi` nativo (`/openapi`). O middleware libera `/swagger` e `/openapi` como públicos; demais rotas exigem `X-Api-Key`.
 - Swagger UI com esquema de segurança "ApiKey" configurado (`SecuritySchemeType.ApiKey`, header `X-Api-Key`) — botão "Authorize" permite testar os endpoints informando a chave. Implementação usa `OpenApiSecuritySchemeReference` (Microsoft.OpenApi 2.x, Swashbuckle 10): `options.AddSecurityRequirement(document => new OpenApiSecurityRequirement { { new OpenApiSecuritySchemeReference("ApiKey", document), [] } })`.
@@ -25,8 +25,13 @@
 - Tabela e seed idempotente adicionados ao `KodiakPlugBank.Infrastructure/Scripts/schema.sql` (aplicado automaticamente pelo SchemaInitializer).
 - `IApikeyFixaRepository` (Core) + `ApikeyFixaRepository` Dapper (Infrastructure) com `ExisteAtivaAsync(hashSha256)`.
 - `AutenticarApikeyFixaUseCase` (Application) calcula SHA-256 da chave recebida (UTF-8, lowercase hex) e valida contra o hash armazenado.
-- `ApiKeyMiddleware`: valida primeiro a apikey fixa (não define pagador no contexto); se não validar, tenta autenticar por pagador (`ChaveKodiakExtrato`) — retrocompatibilidade.
-- 4 novos testes em `Tests/UseCases/AutenticarApikeyFixaUseCaseTests.cs` (total de 32 testes).
+- `ApiKeyMiddleware`: valida **somente** a apikey fixa (não há mais pagador no contexto).
+- **Removidas em 2026-08-01** as validações por chave mestre e por `ChaveKodiakExtrato`:
+  - Chave mestre (`Security:MasterApiKey`) removida do `appsettings.json`, do middleware e da UI do Swagger.
+  - `AutenticarPagadorUseCase` e `GetByChaveKodiakAsync` (interface/repo/fake) removidos.
+  - `ChaveKodiakExtrato` deixou de ser obrigatória/validada no `CriarPagadorUseCase` (request agora `string?`; campo mantido no banco/entidade apenas como dado).
+  - Endpoints de conta/extrato agora resolvem o pagador pelo header **`payercpfcnpj`** via `ObterPagadorPorCpfCnpjUseCase` (sem header → 401; pagador inexistente → 404).
+- 4 novos testes em `Tests/UseCases/AutenticarApikeyFixaUseCaseTests.cs` (total de 25 testes).
 
 ### Segurança (proteção contra DDoS) — adicionado em 2026-08-01
 - Rate limiting nativo (`Microsoft.AspNetCore.RateLimiting`, janela deslizante, partição por IP): política global 100 req/10s e política `bootstrap` (POST /api/v1/payer) 10 req/60s. Resposta 429 com `Retry-After`. Config em `appsettings.json` → `RateLimiting` (classe `KodiakPlugBank.Api/Security/RateLimitingExtensions.cs`).
@@ -42,10 +47,11 @@
 - Tabelas `pagador` e `conta_bancaria` criadas via `KodiakPlugBank.Infrastructure/Scripts/schema.sql` (EmbeddedResource).
 
 ### Decisões e convenções
-- Autenticação exclusiva via apikey. Header `X-Api-Key` = `ChaveKodiakExtrato` do pagador. Endpoint `POST /api/v1/payer` (bootstrap) exige a chave mestre `Security:MasterApiKey` no mesmo header.
+- Autenticação exclusiva via apikey fixa (tabela `apikey_fixa`, header `X-Api-Key`). Sem chave mestre e sem validação por `ChaveKodiakExtrato` (removida em 2026-08-01).
 - Endpoints espelham header/body da API PlugBank (cnpjsh, tokensh, payercpfcnpj, campos do body).
+- Pagador dos endpoints de conta/extrato é identificado pelo **header `payercpfcnpj`** (via `ObterPagadorPorCpfCnpjUseCase` → `GetByCpfCnpjAsync`).
 - Contas NÃO são persistidas junto ao pagador: a associação é feita posteriormente via endpoint de conta (conforme doc do projeto).
-- Configuração em `appsettings.json`: `Database`, `PlugBank` (BaseUrl staging por padrão, CnpjSh, TokenSh), `Security:MasterApiKey` (vazia por padrão).
+- Configuração em `appsettings.json`: `Database`, `PlugBank` (BaseUrl staging por padrão, CnpjSh, TokenSh), `ForwardedHeaders`, `RateLimiting`, `Kestrel`.
 - Nomenclatura: entidades/repositórios em pt-BR; DTOs de integração PlugBank em inglês espelhando a API.
 
 ### Como executar
@@ -68,5 +74,5 @@
 - `docs/ConfiguracaoSeguranca.md` — proteção contra DDoS e configuração de produção (rate limiting, proxies, Kestrel).
 
 ### Pendências / próximos passos
-- Configurar CnpjSh/TokenSh reais da TecnoSpeed e chave mestre antes de produção.
+- Configurar CnpjSh/TokenSh reais da TecnoSpeed antes de produção.
 - Definir a API base (staging vs produção) conforme ambiente.

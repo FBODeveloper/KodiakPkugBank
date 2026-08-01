@@ -65,5 +65,5 @@ O rate limiter roda antes da autenticação para não gastar CPU/BD em requisiç
 - CDN/WAF (ex.: Cloudflare) para absorver DDoS volumétrico (camadas de rede/transporte) — esta API protege
   a camada de aplicação; o volumétrico é papel do CDN.
 - HTTPS obrigatório (terminação no proxy/CDN).
-- Configurar `Security:MasterApiKey` (chave mestre do bootstrap) como variável de ambiente/segredo.
 - Monitorar logs de `429` (logger "RateLimiter") para detectar ataques e calibrar os limites.
+- A autenticação é validada exclusivamente pela apikey fixa (tabela `apikey_fixa`, hash SHA-256) no header `X-Api-Key`.

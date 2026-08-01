@@ -26,7 +26,7 @@ public class CriarPagadorUseCaseTests
         State: "PR",
         Zipcode: "87020000",
         Accounts: null,
-        ChaveKodiakExtrato: chave!);
+        ChaveKodiakExtrato: chave);
 
     [Fact]
     public async Task DeveCriarPagadorComSucesso()
@@ -42,17 +42,14 @@ public class CriarPagadorUseCaseTests
         Assert.Equal(1, _repo.Data[0].Id);
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public async Task DeveFalharQuandoChaveKodiakVazia(string? chave)
+    [Fact]
+    public async Task DeveCriarPagadorSemChaveKodiak()
     {
-        var resultado = await BuildUseCase().ExecuteAsync(Request(chave), _credentials);
+        var resultado = await BuildUseCase().ExecuteAsync(Request(null), _credentials);
 
-        Assert.False(resultado.IsSuccess);
-        Assert.Equal(400, resultado.StatusCode);
-        Assert.Empty(_repo.Data);
+        Assert.True(resultado.IsSuccess);
+        Assert.Single(_repo.Data);
+        Assert.Equal(string.Empty, _repo.Data[0].ChaveKodiakExtrato);
     }
 
     [Fact]

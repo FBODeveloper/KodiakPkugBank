@@ -1,5 +1,5 @@
-using KodiakPlugBank.Api.Auth;
 using KodiakPlugBank.Application.UseCases.Extrato;
+using KodiakPlugBank.Application.UseCases.Pagador;
 using KodiakPlugBank.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
@@ -14,11 +14,15 @@ public static class ExtratoEndpoints
         group.MapPost("/", async (
             CriarExtratoRequest request,
             CriarExtratoUseCase useCase,
+            ObterPagadorPorCpfCnpjUseCase obterPagador,
             IOptions<PlugBankOptions> options,
             HttpContext context,
             CancellationToken ct) =>
         {
-            var pagador = context.GetPagador();
+            var pagador = await ObterPagadorDoContexto(context, obterPagador, ct);
+            if (pagador is null)
+                return Results.Problem(statusCode: StatusCodes.Status401Unauthorized, title: "payercpfcnpj não informado.");
+
             var solicitacao = request with { IdPagador = pagador.Id };
             var resultado = await useCase.ExecuteAsync(solicitacao, options.Value.ToCredentials(), ct);
             return resultado.IsSuccess
@@ -34,11 +38,15 @@ public static class ExtratoEndpoints
         group.MapGet("/{uniqueId}", async (
             string uniqueId,
             ObterExtratoUseCase useCase,
+            ObterPagadorPorCpfCnpjUseCase obterPagador,
             IOptions<PlugBankOptions> options,
             HttpContext context,
             CancellationToken ct) =>
         {
-            var pagador = context.GetPagador();
+            var pagador = await ObterPagadorDoContexto(context, obterPagador, ct);
+            if (pagador is null)
+                return Results.Problem(statusCode: StatusCodes.Status401Unauthorized, title: "payercpfcnpj não informado.");
+
             var resultado = await useCase.ExecuteAsync(uniqueId, pagador.Id, options.Value.ToCredentials(), ct);
             return ApiResponse.From(resultado);
         })
@@ -46,5 +54,15 @@ public static class ExtratoEndpoints
         .WithSummary("Obtém o extrato gerado pelo uniqueId.")
         .Produces<Core.PlugBank.OpenFinance.StatementDocument>()
         .ProducesProblem(StatusCodes.Status404NotFound);
+    }
+
+    private static async Task<Core.Entities.Pagador?> ObterPagadorDoContexto(
+        HttpContext context,
+        ObterPagadorPorCpfCnpjUseCase obterPagador,
+        CancellationToken ct)
+    {
+        var payercpfcnpj = context.Request.Headers["payercpfcnpj"].ToString();
+        var resultado = await obterPagador.ExecuteAsync(payercpfcnpj, ct);
+        return resultado.IsSuccess ? resultado.Value : null;
     }
 }

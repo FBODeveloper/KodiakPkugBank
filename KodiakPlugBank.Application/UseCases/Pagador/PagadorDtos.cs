@@ -14,7 +14,7 @@ public record CriarPagadorRequest(
     string State,
     string Zipcode,
     List<Core.PlugBank.Payer.PayerAccount>? Accounts,
-    string ChaveKodiakExtrato);
+    string? ChaveKodiakExtrato);
 
 public record PagadorResponse(
     int Id,

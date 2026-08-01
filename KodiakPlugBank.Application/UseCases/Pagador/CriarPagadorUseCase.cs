@@ -22,9 +22,6 @@ public class CriarPagadorUseCase
         PlugBankCredentials credentials,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(request.ChaveKodiakExtrato) || request.ChaveKodiakExtrato.Length > 1000)
-            return Result.Fail<PagadorResponse>("ChaveKodiakExtrato é obrigatória e deve ter até 1000 caracteres.");
-
         if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.CpfCnpj))
             return Result.Fail<PagadorResponse>("Name e CpfCnpj são obrigatórios.");
 
@@ -72,7 +69,7 @@ public class CriarPagadorUseCase
             Cep = response.Zipcode ?? request.Zipcode,
             Token = response.Token,
             StatementAtivado = response.StatementActived ?? request.StatementActived ?? false,
-            ChaveKodiakExtrato = request.ChaveKodiakExtrato
+            ChaveKodiakExtrato = request.ChaveKodiakExtrato ?? string.Empty
         };
 
         var id = await _pagadorRepository.AddAsync(pagador, cancellationToken);

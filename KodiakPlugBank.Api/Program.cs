@@ -52,8 +52,7 @@ builder.Services.AddSwaggerGen(options =>
         Name = "X-Api-Key",
         Type = SecuritySchemeType.ApiKey,
         In = ParameterLocation.Header,
-        Description = "Informe a chave de acesso (X-Api-Key) do pagador para autenticar. " +
-                      "Para o bootstrap (POST /api/v1/payer) informe a chave mestre Security:MasterApiKey."
+        Description = "Informe a apikey fixa do KodiakERP para autenticar (header X-Api-Key)."
     });
 
     options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
@@ -64,7 +63,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddSecurityRateLimiting(builder.Configuration);
 
-builder.Services.AddScoped<AutenticarPagadorUseCase>();
+builder.Services.AddScoped<ObterPagadorPorCpfCnpjUseCase>();
 builder.Services.AddScoped<AutenticarApikeyFixaUseCase>();
 builder.Services.AddScoped<CriarPagadorUseCase>();
 builder.Services.AddScoped<ListarPagadoresUseCase>();

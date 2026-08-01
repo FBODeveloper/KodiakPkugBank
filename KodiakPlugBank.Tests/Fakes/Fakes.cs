@@ -19,9 +19,6 @@ public class FakePagadorRepository : IPagadorRepository
     public Task<Pagador?> GetByCpfCnpjAsync(string cpfCnpj, CancellationToken cancellationToken = default)
         => Task.FromResult(Data.FirstOrDefault(p => p.CpfCnpj == cpfCnpj));
 
-    public Task<Pagador?> GetByChaveKodiakAsync(string chaveKodiak, CancellationToken cancellationToken = default)
-        => Task.FromResult(Data.FirstOrDefault(p => p.ChaveKodiakExtrato == chaveKodiak));
-
     public Task<IEnumerable<Pagador>> GetAllAsync(CancellationToken cancellationToken = default)
         => Task.FromResult<IEnumerable<Pagador>>(Data.ToList());
 

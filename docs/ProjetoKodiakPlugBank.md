@@ -16,8 +16,8 @@
  -** Cadastro de Pagador:
      são as empresas que farão uso da api tanto no KodiakERP quanto no TecnoSpedPlugBank;
 	 Os campos necessários estão em: https://docs.pagamentobancario.com.br/#tag/payer/operation/createPayer
-	 Sempre adicionar um campo a mais tanto em banco de dados como em entidades chamado: ChaveKodiakExtrato que deve ser uma string com até 1.000 caracteres
-	 esse campo será utilizado posteriormente como a apikey que o KodiakERP validará nesse projeto.
+	 O campo ChaveKodiakExtrato (até 1.000 caracteres) é persistido no banco/entidade, porém NÃO é mais utilizado
+	 para validação: a autenticação é feita exclusivamente pela apikey fixa (tabela apikey_fixa).
 	 Apesar das contas poderem serem associadas ao pagador junto a criação do pagador vamos, nesse projeto, fazer isso, sempre posteriormente usando os 
 	 endpoints de Conta.
 -** Cadastro de Conta:
@@ -44,8 +44,7 @@
  -- UI interativa: http://localhost:<porta>/swagger
  -- Documento JSON: http://localhost:<porta>/swagger/v1/swagger.json
  -- Para testar os endpoints autenticados, clicar em "Authorize" na UI do Swagger e
-    informar a apikey (header X-Api-Key) que o KodiakERP utiliza (ChaveKodiakExtrato do pagador).
- -- Para o bootstrap (POST /api/v1/payer) informar a chave mestre Security:MasterApiKey.
+    informar a apikey fixa do KodiakERP (header X-Api-Key).
  
  ##FRONTENT 
  -- Ainda em definição
