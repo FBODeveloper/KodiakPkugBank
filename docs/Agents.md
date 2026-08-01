@@ -8,7 +8,7 @@
 ### Estrutura criada
 - Solução `KodiakPlugBank.slnx` (.NET 10) com 5 projetos:
   - `KodiakPlugBank.Core` — entidades (Pagador, ContaBancaria), contratos PlugBank (Payer, Account, OpenFinance), enums e interfaces (IPagadorRepository, IContaBancariaRepository, IPlugBankApi).
-  - `KodiakPlugBank.Application` — casos de uso (CriarPagador, ListarPagadores, ObterPagador, AutenticarPagador, CriarConta, ListarContas, CriarExtrato, ObterExtrato) + Result/Result<T>.
+  - `KodiakPlugBank.Application` — casos de uso (CriarPagador, ListarPagadores, ObterPagador, ObterPagadorPorCpfCnpj, AutenticarApikeyFixa, CriarConta, ListarContas, CriarExtrato, ObterExtrato) + Result/Result<T>.
   - `KodiakPlugBank.Infrastructure` — Dapper + Npgsql (repositórios, DbConnectionFactory, SchemaInitializer), cliente HTTP PlugBankApiClient, options (DatabaseOptions, PlugBankOptions), DI (AddInfrastructure).
   - `KodiakPlugBank.Api` — Minimal API: middleware de autenticação via apikey (header `X-Api-Key`), endpoints `/api/v1/payer`, `/api/v1/account`, `/api/v1/statement/openfinance`, schema automático na inicialização.
   - `KodiakPlugBank.Tests` — xUnit (25 testes): casos de uso com fakes, PlugBankApiClient (desserialização, headers, erros) e mapeamento de variáveis de ambiente.
