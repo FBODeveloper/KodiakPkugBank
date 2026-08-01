@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="KodiakPlugBank.Api/KodiakPlugBank.Api.csproj" />
+  <Project Path="KodiakPlugBank.Application/KodiakPlugBank.Application.csproj" />
+  <Project Path="KodiakPlugBank.Core/KodiakPlugBank.Core.csproj" />
+  <Project Path="KodiakPlugBank.Infrastructure/KodiakPlugBank.Infrastructure.csproj" />
+  <Project Path="KodiakPlugBank.Tests/KodiakPlugBank.Tests.csproj" />
+</Solution>

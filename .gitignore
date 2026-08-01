@@ -1,0 +1,25 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build results
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+
+# Test results
+[Tt]est[Rr]esult*/
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# IDE
+.idea/
+*.sln.iml
+
+# OS
+Thumbs.db
+.DS_Store
