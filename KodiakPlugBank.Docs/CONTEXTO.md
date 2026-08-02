@@ -35,7 +35,8 @@ Separação do código-fonte (.NET) para que a documentação possa ser publicad
 - Cada endpoint possui: `metodo`, `rota`, `nome`, `resumo`, `oqueFaz`, `headers`,
   `campos`, `bodyExemplo`, `respostaStatus`, `respostaDescricao`, `respostaExemplo`,
   `respostaCampos` (schema da resposta), `erros`, `comoUsar` e `exemplos`
-  (objeto com `curl`, `csharp` e `powershell` — todos usam o placeholder `{base}`).
+  (objeto com `curl`, `csharp`, `powershell`, `python`, `node`, `react` e `nextjs` —
+  todos usam o placeholder `{base}`).
 - Os exemplos e a página Visão Geral trocam `{base}` pela URL base do **ambiente selecionado**
   (definido em `ambientes` no `data.js`). O botão **Swagger** usa a mesma base
   (oculto quando o ambiente não é homologação).
@@ -54,7 +55,7 @@ Separação do código-fonte (.NET) para que a documentação possa ser publicad
 - **Tema claro/escuro**: botão no topo alterna `data-bs-theme` no `<html>`, com ícone `bi-sun`/`bi-moon`.
   Persistido em `localStorage` (`kodiak-docs-tema`).
 - **Copiar código**: todo bloco de código tem botão "Copiar" (`navigator.clipboard` com fallback).
-- **Exemplos em 3 linguagens**: abas cURL / C# / PowerShell em cada endpoint.
+- **Exemplos em 7 linguagens**: abas cURL / C# / PowerShell / Python / Node.js / React / Next.js em cada endpoint.
 - **Schema de resposta**: tabela "Campos da resposta" (`respostaCampos`) em cada endpoint.
 - **Busca no menu**: campo centralizado no header (topbar) que filtra os itens da sidebar (inclui submenu de Pagador).
 - **Botão Swagger**: link direto para `/swagger` (somente quando o ambiente é homologação).

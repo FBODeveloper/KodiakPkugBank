@@ -270,7 +270,11 @@
     var idiomas = [
       { chave: "curl", rotulo: "cURL" },
       { chave: "csharp", rotulo: "C#" },
-      { chave: "powershell", rotulo: "PowerShell" }
+      { chave: "powershell", rotulo: "PowerShell" },
+      { chave: "python", rotulo: "Python" },
+      { chave: "node", rotulo: "Node.js" },
+      { chave: "react", rotulo: "React" },
+      { chave: "nextjs", rotulo: "Next.js" }
     ];
     var presentes = idiomas.filter(function (i) { return exemplos[i.chave]; });
     if (presentes.length === 0) return "";

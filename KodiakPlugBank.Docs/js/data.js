@@ -315,7 +315,102 @@ Invoke-RestMethod -Uri "{base}/api/v1/payer" \`
   -Method Post \`
   -Headers @{ "X-Api-Key" = "SUA_APIKEY" } \`
   -ContentType "application/json" \`
-  -Body $body`
+  -Body $body`,
+            python: `import requests
+
+url = "{base}/api/v1/payer"
+headers = {
+    "X-Api-Key": "SUA_APIKEY",
+    "Content-Type": "application/json"
+}
+payload = {
+    "name": "João da Silva",
+    "email": "joao@exemplo.com",
+    "cpfCnpj": "12345678909",
+    "statementActived": True,
+    "street": "Rua das Flores",
+    "neighborhood": "Centro",
+    "addressNumber": "100",
+    "city": "São Paulo",
+    "state": "SP",
+    "zipcode": "01001000"
+}
+
+resp = requests.post(url, json=payload, headers=headers)
+print(resp.status_code)
+print(resp.json())`,
+            node: `const resp = await fetch("{base}/api/v1/payer", {
+  method: "POST",
+  headers: {
+    "X-Api-Key": "SUA_APIKEY",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: "João da Silva",
+    email: "joao@exemplo.com",
+    cpfCnpj: "12345678909",
+    statementActived: true,
+    street: "Rua das Flores",
+    neighborhood: "Centro",
+    addressNumber: "100",
+    city: "São Paulo",
+    state: "SP",
+    zipcode: "01001000"
+  })
+});
+
+console.log(resp.status, await resp.json());`,
+            react: `import { useState } from "react";
+
+const [resultado, setResultado] = useState(null);
+
+async function criarPagador() {
+  const resp = await fetch("{base}/api/v1/payer", {
+    method: "POST",
+    headers: {
+      "X-Api-Key": "SUA_APIKEY",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: "João da Silva",
+      email: "joao@exemplo.com",
+      cpfCnpj: "12345678909",
+      statementActived: true,
+      street: "Rua das Flores",
+      neighborhood: "Centro",
+      addressNumber: "100",
+      city: "São Paulo",
+      state: "SP",
+      zipcode: "01001000"
+    })
+  });
+  setResultado(await resp.json());
+}`,
+            nextjs: `// app/api/payer/route.ts (Next.js App Router)
+import { NextResponse } from "next/server";
+
+export async function POST() {
+  const resp = await fetch("{base}/api/v1/payer", {
+    method: "POST",
+    headers: {
+      "X-Api-Key": "SUA_APIKEY",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: "João da Silva",
+      email: "joao@exemplo.com",
+      cpfCnpj: "12345678909",
+      statementActived: true,
+      street: "Rua das Flores",
+      neighborhood: "Centro",
+      addressNumber: "100",
+      city: "São Paulo",
+      state: "SP",
+      zipcode: "01001000"
+    })
+  });
+  return NextResponse.json(await resp.json(), { status: resp.status });
+}`
           }
         },
 
@@ -400,7 +495,47 @@ Console.WriteLine(corpo);`,
   -Headers @{
     "X-Api-Key"    = "SUA_APIKEY"
     "payercpfcnpj" = "12345678909"
-  }`
+  }`,
+            python: `import requests
+
+url = "{base}/api/v1/payer"
+headers = {
+    "X-Api-Key": "SUA_APIKEY",
+    "payercpfcnpj": "12345678909"
+}
+
+resp = requests.get(url, headers=headers)
+print(resp.status_code)
+print(resp.json())`,
+            node: `const resp = await fetch("{base}/api/v1/payer", {
+  headers: {
+    "X-Api-Key": "SUA_APIKEY",
+    "payercpfcnpj": "12345678909"
+  }
+});
+
+console.log(resp.status, await resp.json());`,
+            react: `async function consultarPagador() {
+  const resp = await fetch("{base}/api/v1/payer", {
+    headers: {
+      "X-Api-Key": "SUA_APIKEY",
+      "payercpfcnpj": "12345678909"
+    }
+  });
+  setResultado(await resp.json());
+}`,
+            nextjs: `// app/api/payer/route.ts (Next.js App Router)
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  const resp = await fetch("{base}/api/v1/payer", {
+    headers: {
+      "X-Api-Key": "SUA_APIKEY",
+      "payercpfcnpj": "12345678909"
+    }
+  });
+  return NextResponse.json(await resp.json(), { status: resp.status });
+}`
           }
         },
 
@@ -469,7 +604,43 @@ var corpo = await resposta.Content.ReadAsStringAsync();
 Console.WriteLine(corpo);`,
             powershell: `Invoke-RestMethod -Uri "{base}/api/v1/payer/list" \`
   -Method Get \`
-  -Headers @{ "X-Api-Key" = "SUA_APIKEY" }`
+  -Headers @{ "X-Api-Key" = "SUA_APIKEY" }`,
+            python: `import requests
+
+url = "{base}/api/v1/payer/list"
+headers = {
+    "X-Api-Key": "SUA_APIKEY"
+}
+
+resp = requests.get(url, headers=headers)
+print(resp.status_code)
+print(resp.json())`,
+            node: `const resp = await fetch("{base}/api/v1/payer/list", {
+  headers: {
+    "X-Api-Key": "SUA_APIKEY"
+  }
+});
+
+console.log(resp.status, await resp.json());`,
+            react: `async function listarPagadores() {
+  const resp = await fetch("{base}/api/v1/payer/list", {
+    headers: {
+      "X-Api-Key": "SUA_APIKEY"
+    }
+  });
+  setResultado(await resp.json());
+}`,
+            nextjs: `// app/api/payer/list/route.ts (Next.js App Router)
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  const resp = await fetch("{base}/api/v1/payer/list", {
+    headers: {
+      "X-Api-Key": "SUA_APIKEY"
+    }
+  });
+  return NextResponse.json(await resp.json(), { status: resp.status });
+}`
           }
         },
 
@@ -605,7 +776,102 @@ Invoke-RestMethod -Uri "{base}/api/v1/payer" \`
     "payercpfcnpj" = "12345678909"
   } \`
   -ContentType "application/json" \`
-  -Body $body`
+  -Body $body`,
+            python: `import requests
+
+url = "{base}/api/v1/payer"
+headers = {
+    "X-Api-Key": "SUA_APIKEY",
+    "payercpfcnpj": "12345678909",
+    "Content-Type": "application/json"
+}
+payload = {
+    "name": "João da Silva Santos",
+    "email": "joao.santos@exemplo.com",
+    "cpfCnpj": "12345678909",
+    "statementActived": True,
+    "street": "Rua das Flores",
+    "neighborhood": "Centro",
+    "addressNumber": "200",
+    "city": "São Paulo",
+    "state": "SP",
+    "zipcode": "01001000"
+}
+
+resp = requests.put(url, json=payload, headers=headers)
+print(resp.status_code)
+print(resp.json())`,
+            node: `const resp = await fetch("{base}/api/v1/payer", {
+  method: "PUT",
+  headers: {
+    "X-Api-Key": "SUA_APIKEY",
+    "payercpfcnpj": "12345678909",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: "João da Silva Santos",
+    email: "joao.santos@exemplo.com",
+    cpfCnpj: "12345678909",
+    statementActived: true,
+    street: "Rua das Flores",
+    neighborhood: "Centro",
+    addressNumber: "200",
+    city: "São Paulo",
+    state: "SP",
+    zipcode: "01001000"
+  })
+});
+
+console.log(resp.status, await resp.json());`,
+            react: `async function atualizarPagador() {
+  const resp = await fetch("{base}/api/v1/payer", {
+    method: "PUT",
+    headers: {
+      "X-Api-Key": "SUA_APIKEY",
+      "payercpfcnpj": "12345678909",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: "João da Silva Santos",
+      email: "joao.santos@exemplo.com",
+      cpfCnpj: "12345678909",
+      statementActived: true,
+      street: "Rua das Flores",
+      neighborhood: "Centro",
+      addressNumber: "200",
+      city: "São Paulo",
+      state: "SP",
+      zipcode: "01001000"
+    })
+  });
+  setResultado(await resp.json());
+}`,
+            nextjs: `// app/api/payer/route.ts (Next.js App Router)
+import { NextResponse } from "next/server";
+
+export async function PUT() {
+  const resp = await fetch("{base}/api/v1/payer", {
+    method: "PUT",
+    headers: {
+      "X-Api-Key": "SUA_APIKEY",
+      "payercpfcnpj": "12345678909",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: "João da Silva Santos",
+      email: "joao.santos@exemplo.com",
+      cpfCnpj: "12345678909",
+      statementActived: true,
+      street: "Rua das Flores",
+      neighborhood: "Centro",
+      addressNumber: "200",
+      city: "São Paulo",
+      state: "SP",
+      zipcode: "01001000"
+    })
+  });
+  return NextResponse.json(await resp.json(), { status: resp.status });
+}`
           }
         },
 
@@ -667,7 +933,53 @@ Console.WriteLine(corpo);`,
   -Headers @{
     "X-Api-Key"    = "SUA_APIKEY"
     "payercpfcnpj" = "12345678909"
-  }`
+  }`,
+            python: `import requests
+
+url = "{base}/api/v1/payer/67f2c5b9-1d4a-4c6e-8f3a-2b9e0c1d4a5b"
+headers = {
+    "X-Api-Key": "SUA_APIKEY",
+    "payercpfcnpj": "12345678909"
+}
+
+resp = requests.delete(url, headers=headers)
+print(resp.status_code)
+print(resp.json())`,
+            node: `const tokenPayer = "67f2c5b9-1d4a-4c6e-8f3a-2b9e0c1d4a5b";
+const resp = await fetch("{base}/api/v1/payer/" + tokenPayer, {
+  method: "DELETE",
+  headers: {
+    "X-Api-Key": "SUA_APIKEY",
+    "payercpfcnpj": "12345678909"
+  }
+});
+
+console.log(resp.status, await resp.json());`,
+            react: `async function desativarPagador() {
+  const tokenPayer = "67f2c5b9-1d4a-4c6e-8f3a-2b9e0c1d4a5b";
+  const resp = await fetch("{base}/api/v1/payer/" + tokenPayer, {
+    method: "DELETE",
+    headers: {
+      "X-Api-Key": "SUA_APIKEY",
+      "payercpfcnpj": "12345678909"
+    }
+  });
+  setResultado(await resp.json());
+}`,
+            nextjs: `// app/api/payer/[tokenPayer]/route.ts (Next.js App Router)
+import { NextResponse } from "next/server";
+
+export async function DELETE() {
+  const tokenPayer = "67f2c5b9-1d4a-4c6e-8f3a-2b9e0c1d4a5b";
+  const resp = await fetch("{base}/api/v1/payer/" + tokenPayer, {
+    method: "DELETE",
+    headers: {
+      "X-Api-Key": "SUA_APIKEY",
+      "payercpfcnpj": "12345678909"
+    }
+  });
+  return NextResponse.json(await resp.json(), { status: resp.status });
+}`
           }
         }
       ]

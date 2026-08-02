@@ -103,7 +103,8 @@
   (`data-bs-theme` + `bi-sun`/`bi-moon`); botões "Copiar" em todos os blocos de código
   (`navigator.clipboard` com fallback); exemplos em abas **cURL / C# / PowerShell**; tabela
   "Campos da resposta" (`respostaCampos`); busca filtrando o menu (inclui submenu) com o campo
-  **centralizado no header** (movido da sidebar em 2026-08-02); botão **Swagger**
+  **centralizado no header** (movido da sidebar em 2026-08-02); exemplos em **7 linguagens**
+  (cURL / C# / PowerShell / Python / Node.js / React / Next.js); botão **Swagger**
   visível somente no ambiente de homologação. Validado com `node --check` e teste jsdom (40 verificações,
   0 falhas).
 
