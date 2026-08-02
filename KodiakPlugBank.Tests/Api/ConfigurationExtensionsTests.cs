@@ -61,4 +61,46 @@ public class ConfigurationExtensionsTests
             Environment.SetEnvironmentVariable(PlugBankConfig.EnvCnpjSh, null);
         }
     }
+
+    [Fact]
+    public void DeveUsarBaseUrlDeStagingQuandoAmbienteNaoDefinido()
+    {
+        var config = CriarConfiguracao([]);
+
+        Assert.Equal("https://staging.pagamentobancario.com.br", config["PlugBank:BaseUrl"]);
+    }
+
+    [Fact]
+    public void DeveUsarBaseUrlDeProducaoQuandoAmbienteProduction()
+    {
+        var config = CriarConfiguracao(["Production"]);
+
+        Assert.Equal("https://api.pagamentobancario.com.br", config["PlugBank:BaseUrl"]);
+    }
+
+    [Fact]
+    public void DeveRespeitarPrecedenciaDaVariavelDeAmbienteSobreBaseUrlDeProducao()
+    {
+        var config = new ConfigurationBuilder()
+            .AddConfiguration(CriarConfiguracao(["Production"]))
+            .AddInMemoryCollection(new Dictionary<string, string?> { ["PlugBank:BaseUrl"] = "https://outro.host" })
+            .Build();
+
+        Assert.Equal("https://outro.host", config["PlugBank:BaseUrl"]);
+    }
+
+    private static IConfiguration CriarConfiguracao(string[] ambientes)
+    {
+        var raizProjeto = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Path.Combine(raizProjeto, "KodiakPlugBank.Api"))
+            .AddJsonFile("appsettings.json", optional: false);
+
+        foreach (var ambiente in ambientes)
+        {
+            builder.AddJsonFile($"appsettings.{ambiente}.json", optional: false);
+        }
+
+        return builder.Build();
+    }
 }

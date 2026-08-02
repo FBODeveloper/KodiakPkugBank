@@ -5,9 +5,14 @@ https://docs.pagamentobancario.com.br/#section/Introducao
  
  em ROTAS DA APLICAÇÃO usaremos apenas PAGADOR, CONTA e OPENFINANCE
  Rotas raiz: (Nos endpoints estará informado como #rotaraiz
-   -** Produção: https://api.pagamentobancario.com.br/api/v1/payer
-   -** Homologação: https://staging.pagamentobancario.com.br/api/v1/payer
-   
+    -** Produção: https://api.pagamentobancario.com.br/api/v1/payer
+    -** Homologação: https://staging.pagamentobancario.com.br/api/v1/payer
+    
+  - ** A aplicação usa a base de **Homologação (staging)** por padrão (`appsettings.json`).
+     Para usar a base de **Produção**, rodar com `ASPNETCORE_ENVIRONMENT=Production`
+     (o `appsettings.Production.json` define `PlugBank:BaseUrl` = produção; o log de startup
+     exibe o "PlugBank BaseUrl efetivo" para confirmar).
+
  - ** PAGADOR: https://docs.pagamentobancario.com.br/#tag/payer
    POST: (Cadastro) #rotaraiz
    PUT:  (Atualização) #rotaraiz

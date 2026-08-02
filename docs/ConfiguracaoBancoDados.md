@@ -67,6 +67,22 @@ dotnet run --project KodiakPlugBank.Api
 > A notação `__` (dois underscores) é convertida pelo .NET para `:` e permite sobrescrever
 > qualquer seção do `appsettings.json` via variável de ambiente.
 
+### 3. Produção
+
+O arquivo `appsettings.Production.json` (carregado quando `ASPNETCORE_ENVIRONMENT=Production`)
+**não contém** a seção `Database` — apenas a `PlugBank:BaseUrl` de produção. Para o banco de
+produção, defina a connection string completa via variável de ambiente (a env var tem precedência
+sobre todos os arquivos JSON):
+
+```powershell
+$env:Database__ConnectionString = "Host=SEU_HOST;Port=5432;Database=kodiak_plugbank;Username=SEU_USUARIO;Password=SUA_SENHA"
+$env:ASPNETCORE_ENVIRONMENT = "Production"
+dotnet run --project KodiakPlugBank.Api
+```
+
+> Como a `ConnectionString` é uma string única (e não um objeto com campos separados), a seção
+> deve ser sobrescrita **por completo** — nunca informada parcialmente.
+
 ### Parâmetros úteis da connection string (Npgsql)
 
 | Parâmetro  | Exemplo                          | Descrição                            |

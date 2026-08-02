@@ -77,6 +77,9 @@ builder.Services.AddScoped<ObterExtratoUseCase>();
 
 var app = builder.Build();
 
+app.Logger.LogInformation("Ambiente: {Ambiente}", app.Environment.EnvironmentName);
+app.Logger.LogInformation("PlugBank BaseUrl efetivo: {BaseUrl}", app.Configuration["PlugBank:BaseUrl"]);
+
 app.UseForwardedHeaders();
 app.UseSecurityHeaders();
 

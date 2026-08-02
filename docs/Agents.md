@@ -11,7 +11,7 @@
   - `KodiakPlugBank.Application` — casos de uso (CriarPagador, ConsultarPagadorPlugBank, ListarPagadoresPlugBank, AtualizarPagador, DesativarPagador, ObterPagadorPorCpfCnpj, AutenticarApikeyFixa, CriarConta, ListarContas, CriarExtrato, ObterExtrato) + Result/Result<T>.
   - `KodiakPlugBank.Infrastructure` — Dapper + Npgsql (repositórios, DbConnectionFactory, SchemaInitializer), cliente HTTP PlugBankApiClient, options (DatabaseOptions, PlugBankOptions), DI (AddInfrastructure).
   - `KodiakPlugBank.Api` — Minimal API: middleware de autenticação via apikey (header `X-Api-Key`), endpoints `/api/v1/payer` (POST, GET, PUT, GET /list, DELETE /{tokenPayer}), `/api/v1/account`, `/api/v1/statement/openfinance`, schema automático na inicialização.
-  - `KodiakPlugBank.Tests` — xUnit (42 testes): casos de uso com fakes, PlugBankApiClient (desserialização, headers, erros) e mapeamento de variáveis de ambiente.
+  - `KodiakPlugBank.Tests` — xUnit (45 testes): casos de uso com fakes, PlugBankApiClient (desserialização, headers, erros) e mapeamento de variáveis de ambiente/precedência.
 - Pacotes: Dapper 2.1.79, Npgsql 10.0.3, Microsoft.OpenApi 2.7.5 (correção CVE-2026-49451), Swashbuckle.AspNetCore 10.2.3.
 - Documentação de uso via Swagger UI (somente em desenvolvimento): `/swagger` (UI) e `/swagger/v1/swagger.json` (JSON gerado pelo Swashbuckle). Substituiu o `MapOpenApi` nativo (`/openapi`). O middleware libera `/swagger` e `/openapi` como públicos; demais rotas exigem `X-Api-Key`.
 - Swagger UI com esquema de segurança "ApiKey" configurado (`SecuritySchemeType.ApiKey`, header `X-Api-Key`) — botão "Authorize" permite testar os endpoints informando a chave. Implementação usa `OpenApiSecuritySchemeReference` (Microsoft.OpenApi 2.x, Swashbuckle 10): `options.AddSecurityRequirement(document => new OpenApiSecurityRequirement { { new OpenApiSecuritySchemeReference("ApiKey", document), [] } })`.
@@ -61,7 +61,7 @@
 - Endpoints espelham header/body da API PlugBank (cnpjsh, tokensh, payercpfcnpj, campos do body).
 - Pagador dos endpoints de conta/extrato é identificado pelo **header `payercpfcnpj`** (via `ObterPagadorPorCpfCnpjUseCase` → `GetByCpfCnpjAsync`).
 - Contas NÃO são persistidas junto ao pagador: a associação é feita posteriormente via endpoint de conta (conforme doc do projeto).
-- Configuração em `appsettings.json`: `Database`, `PlugBank` (BaseUrl staging por padrão, CnpjSh, TokenSh), `ForwardedHeaders`, `RateLimiting`, `Kestrel`.
+- Configuração em `appsettings.json`: `Database`, `PlugBank` (BaseUrl staging por padrão, CnpjSh, TokenSh), `ForwardedHeaders`, `RateLimiting`, `Kestrel`. Em produção, `appsettings.Production.json` substitui `PlugBank:BaseUrl` (ver seção "Ambientes de configuração").
 - Nomenclatura: entidades/repositórios em pt-BR; DTOs de integração PlugBank em inglês espelhando a API.
 
 ### Como executar
@@ -73,7 +73,22 @@
 - `tokensh` é lido da variável de ambiente `KODIAK_PLUGBANK`.
 - Mapeamento implementado em `KodiakPlugBank.Api/ConfigurationExtensions.cs` (precedência sobre appsettings).
 - `appsettings.json` mantém apenas `PlugBank:BaseUrl` (staging por padrão).
-- 3 testes cobrem o mapeamento/precedência em `Tests/Api/ConfigurationExtensionsTests.cs`.
+- 6 testes cobrem o mapeamento/precedência em `Tests/Api/ConfigurationExtensionsTests.cs`.
+
+### Ambientes de configuração (adicionado em 2026-08-02)
+- `appsettings.json` — base (desenvolvimento/homologação): `PlugBank:BaseUrl` = staging, connection string local.
+- `appsettings.Production.json` — contém somente `PlugBank:BaseUrl` = `https://api.pagamentobancario.com.br`. É carregado automaticamente sobre o base quando `ASPNETCORE_ENVIRONMENT=Production` (as seções informadas substituem as do base; não há merge parcial).
+- **Banco de dados em produção**: NÃO colocar connection string no arquivo de produção. Definir via variável de ambiente `Database__ConnectionString` (precedência sobre os arquivos JSON, já documentado em `docs/ConfiguracaoBancoDados.md`). Sem a env var, produção usa a connection string local do `appsettings.json`.
+- `CnpjSh`/`TokenSh`: continuam via variáveis de ambiente `KODIAK_PLUGBANK_SH`/`KODIAK_PLUGBANK` (mesmo em produção).
+- Swagger UI habilitado **somente** em Development.
+- Logs de startup exibem o `Ambiente` e o `PlugBank BaseUrl efetivo` (útil para confirmar qual host está em uso).
+- Executar em produção:
+  ```powershell
+  $env:ASPNETCORE_ENVIRONMENT = "Production"
+  dotnet run --project KodiakPlugBank.Api
+  ```
+  Ou publicar (`dotnet publish`) e rodar o executável com `ASPNETCORE_ENVIRONMENT=Production` definido. O default do ASP.NET Core (sem env var) já é `Production`.
+- Testes de precedência da base de produção em `Tests/Api/ConfigurationExtensionsTests.cs` (3 novos, total 45 testes).
 
 ### Documentos úteis
 - `docs/ConfiguracaoBancoDados.md` — guia para preparar o banco de dados em **outras máquinas**
@@ -85,4 +100,4 @@
 
 ### Pendências / próximos passos
 - Configurar CnpjSh/TokenSh reais da TecnoSpeed antes de produção.
-- Definir a API base (staging vs produção) conforme ambiente.
+- Liberar o IP da máquina/servidor na TecnoSped para acesso à API em produção (hoje retorna 403).
