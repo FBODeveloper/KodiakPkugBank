@@ -98,15 +98,14 @@
 - Contexto do projeto: `KodiakPlugBank.Docs/CONTEXTO.md`.
 - **Melhorias do menu (2026-08-02):** marca "Kodiak PlugBank" no header fixo (topbar), sidebar só com menu
   (330px, sem truncamento), "Pagador" como acordeão (collapse `#sub-pagador`) e busca no menu.
-- **7 melhorias de usabilidade (2026-08-02):** seletor de ambiente (Homologação/Produção) que troca a base
+- **Melhorias de usabilidade (2026-08-02):** seletor de ambiente (Homologação/Produção) que troca a base
   `{base}` dos exemplos e o link do Swagger (persistido em localStorage); tema claro/escuro
   (`data-bs-theme` + `bi-sun`/`bi-moon`); botões "Copiar" em todos os blocos de código
-  (`navigator.clipboard` com fallback); exemplos em abas **cURL / C# / PowerShell**; tabela
+  (`navigator.clipboard` com fallback); exemplos em abas de **7 linguagens**
+  (cURL / C# / PowerShell / Python / Node.js / React / Next.js); tabela
   "Campos da resposta" (`respostaCampos`); busca filtrando o menu (inclui submenu) com o campo
-  **centralizado no header** (movido da sidebar em 2026-08-02); exemplos em **7 linguagens**
-  (cURL / C# / PowerShell / Python / Node.js / React / Next.js); botão **Swagger**
-  visível somente no ambiente de homologação. Validado com `node --check` e teste jsdom (40 verificações,
-  0 falhas).
+  **centralizado no header**; botão **Swagger** visível somente no ambiente de homologação.
+  Validado com `node --check` e teste jsdom (todas as rotas, 0 falhas).
 
 ### Documentos úteis
 - `docs/ConfiguracaoBancoDados.md` — guia para preparar o banco de dados em **outras máquinas**
@@ -120,3 +119,40 @@
 - Configurar CnpjSh/TokenSh reais da TecnoSpeed antes de produção.
 - Liberar o IP da máquina/servidor na TecnoSped para acesso à API em produção (hoje retorna 403).
 - Documentar os módulos **Conta** e **Extrato** no site `KodiakPlugBank.Docs/` (em breve).
+- Ajustar a URL de produção dos exemplos (`https://api.kodiakplugbank.com.br` é placeholder) em
+  `KodiakPlugBank.Docs/js/data.js` quando o domínio definitivo for definido.
+- `package.json` vazio na raiz do repositório (sobra do `git init`) — ainda não removido/commitado.
+
+##REGISTRO DA SESSÃO (2026-08-02)
+### Objetivo da sessão
+- Concluir a separação de configuração por ambiente (commit `27fc516`) e evoluir o site de
+  documentação `KodiakPlugBank.Docs/` com as melhorias aprovadas (copiar, ambiente, busca,
+  tema, abas, schema, Swagger) e exemplos em mais linguagens.
+
+### Entregas da sessão
+1. **Site de documentação criado e publicado** — `KodiakPlugBank.Docs/` (HTML5 + CSS + Bootstrap 5 +
+   JS): `index.html`, `css/styles.css`, `js/data.js`, `js/app.js`, `CONTEXTO.md`. Navegação por hash
+   (`#/pagador/criar` etc.), Pagador documentado (POST/GET/GET list/PUT/DELETE), Conta e Extrato "em breve".
+2. **Melhorias de usabilidade implementadas** — seletor de ambiente com `{base}` nos exemplos e no link
+   do Swagger (persistido em `localStorage` `kodiak-docs-ambiente`); tema claro/escuro (`data-bs-theme`,
+   ícone `bi-sun`/`bi-moon`, `kodiak-docs-tema`); botões "Copiar" (`navigator.clipboard` + fallback);
+   abas de exemplos; tabela "Campos da resposta" (`respostaCampos`); busca centralizada no header;
+   Swagger oculto fora da homologação.
+3. **Exemplos em 7 linguagens** — adicionados Python, Node.js, React e Next.js (além de cURL, C# e
+   PowerShell) em todos os 5 endpoints. Lista de idiomas em `app.js` (`abasExemplos`); conteúdo em `data.js`.
+4. **Correções** — exemplos PowerShell usavam crase (continuação de linha) dentro de template literal,
+   quebrando o JS do `data.js`; escapadas como `\``. Busca movida da sidebar para o centro do header.
+5. **Validação** — `node --check` limpo nos 2 JS; teste jsdom (`C:\Users\FABIO\AppData\Local\Temp\opencode\docsmoke\test4.js`)
+   cobrindo todas as rotas, troca de ambiente/tema, busca, abas, schema e Swagger (0 falhas).
+
+### Commits enviados para `origin/main`
+- `2137e62` — Adiciona site de documentacao em HTML com melhorias de usabilidade.
+- `e118902` — Move campo de busca para o centro do header (topbar).
+- `bb2dc5f` — Adiciona exemplos de chamada em Python, Node.js, React e Next.js na documentacao.
+- (Base já enviada antes da sessão: `27fc516` — configuração de ambiente de produção.)
+
+### Estado atual (ao voltar)
+- `git status`: alterações em `docs/Agents.md` (este registro) não commitadas; `package.json` da raiz
+  permanece untracked (não incluído).
+- API da Kodiak não está rodando; docs validam via jsdom/servidor estático, sem dependência da API.
+- Detalhes do projeto de docs: `KodiakPlugBank.Docs/CONTEXTO.md`.
