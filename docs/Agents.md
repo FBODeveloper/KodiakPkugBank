@@ -102,7 +102,8 @@
   `{base}` dos exemplos e o link do Swagger (persistido em localStorage); tema claro/escuro
   (`data-bs-theme` + `bi-sun`/`bi-moon`); botões "Copiar" em todos os blocos de código
   (`navigator.clipboard` com fallback); exemplos em abas **cURL / C# / PowerShell**; tabela
-  "Campos da resposta" (`respostaCampos`); busca filtrando o menu (inclui submenu); botão **Swagger**
+  "Campos da resposta" (`respostaCampos`); busca filtrando o menu (inclui submenu) com o campo
+  **centralizado no header** (movido da sidebar em 2026-08-02); botão **Swagger**
   visível somente no ambiente de homologação. Validado com `node --check` e teste jsdom (40 verificações,
   0 falhas).
 

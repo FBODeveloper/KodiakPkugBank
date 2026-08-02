@@ -56,7 +56,7 @@ Separação do código-fonte (.NET) para que a documentação possa ser publicad
 - **Copiar código**: todo bloco de código tem botão "Copiar" (`navigator.clipboard` com fallback).
 - **Exemplos em 3 linguagens**: abas cURL / C# / PowerShell em cada endpoint.
 - **Schema de resposta**: tabela "Campos da resposta" (`respostaCampos`) em cada endpoint.
-- **Busca no menu**: campo filtra os itens da sidebar (inclui submenu de Pagador).
+- **Busca no menu**: campo centralizado no header (topbar) que filtra os itens da sidebar (inclui submenu de Pagador).
 - **Botão Swagger**: link direto para `/swagger` (somente quando o ambiente é homologação).
 
 ## A fazer (próximas etapas)

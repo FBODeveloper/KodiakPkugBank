@@ -12,17 +12,22 @@
 
   <!-- Barra superior (marca no header) -->
   <header class="topbar">
-    <button class="btn btn-link text-white d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Abrir menu">
-      <i class="bi bi-list fs-3"></i>
-    </button>
-    <div class="topbar-marca">
-      <i class="bi bi-bank"></i>
-      <div>
-        <strong>Kodiak PlugBank</strong>
-        <small>Documentação da API</small>
+    <div class="topbar-esquerda">
+      <button class="btn btn-link text-white d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Abrir menu">
+        <i class="bi bi-list fs-3"></i>
+      </button>
+      <div class="topbar-marca">
+        <i class="bi bi-bank"></i>
+        <div>
+          <strong>Kodiak PlugBank</strong>
+          <small>Documentação da API</small>
+        </div>
       </div>
     </div>
-    <div class="topbar-acoes ms-auto">
+    <div class="topbar-busca">
+      <input id="buscaMenu" type="search" class="form-control form-control-sm" placeholder="Pesquisar no menu..." aria-label="Pesquisar no menu">
+    </div>
+    <div class="topbar-acoes">
       <a id="linkSwagger" class="btn btn-outline-light btn-sm d-none d-sm-inline-flex align-items-center gap-1" href="http://localhost:5299/swagger" target="_blank" rel="noopener" title="Swagger (somente em desenvolvimento)">
         <i class="bi bi-braces"></i> Swagger
       </a>
@@ -42,9 +47,6 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Fechar"></button>
       </div>
       <div class="offcanvas-body p-0">
-        <div class="sidebar-busca">
-          <input id="buscaMenu" type="search" class="form-control form-control-sm" placeholder="Pesquisar no menu..." aria-label="Pesquisar no menu">
-        </div>
         <nav class="nav flex-column sidebar-nav" id="menu">
           <a class="nav-link" href="#/visao-geral" data-rota="visao-geral">
             <i class="bi bi-house-door"></i> Visão Geral
