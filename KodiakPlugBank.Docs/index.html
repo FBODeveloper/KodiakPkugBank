@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kodiak PlugBank API — Documentação</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Barra superior (marca no header) -->
+  <header class="topbar">
+    <button class="btn btn-link text-white d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Abrir menu">
+      <i class="bi bi-list fs-3"></i>
+    </button>
+    <div class="topbar-marca">
+      <i class="bi bi-bank"></i>
+      <div>
+        <strong>Kodiak PlugBank</strong>
+        <small>Documentação da API</small>
+      </div>
+    </div>
+    <div class="topbar-acoes ms-auto">
+      <a id="linkSwagger" class="btn btn-outline-light btn-sm d-none d-sm-inline-flex align-items-center gap-1" href="http://localhost:5299/swagger" target="_blank" rel="noopener" title="Swagger (somente em desenvolvimento)">
+        <i class="bi bi-braces"></i> Swagger
+      </a>
+      <select id="seletorAmbiente" class="form-select form-select-sm seletor-ambiente" title="Ambiente da API" aria-label="Ambiente da API"></select>
+      <button id="btnTema" class="btn btn-outline-light btn-sm" type="button" title="Alternar tema claro/escuro" aria-label="Alternar tema claro/escuro">
+        <i class="bi bi-sun"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="sidebar" aria-labelledby="sidebarTitulo">
+      <div class="offcanvas-header d-lg-none">
+        <h5 class="offcanvas-title" id="sidebarTitulo">Menu</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Fechar"></button>
+      </div>
+      <div class="offcanvas-body p-0">
+        <div class="sidebar-busca">
+          <input id="buscaMenu" type="search" class="form-control form-control-sm" placeholder="Pesquisar no menu..." aria-label="Pesquisar no menu">
+        </div>
+        <nav class="nav flex-column sidebar-nav" id="menu">
+          <a class="nav-link" href="#/visao-geral" data-rota="visao-geral">
+            <i class="bi bi-house-door"></i> Visão Geral
+          </a>
+          <a class="nav-link" href="#/autenticacao" data-rota="autenticacao">
+            <i class="bi bi-shield-lock"></i> Autenticação
+          </a>
+
+          <div class="sidebar-submenu">
+            <button class="sidebar-submenu-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#sub-pagador" aria-expanded="false" aria-controls="sub-pagador">
+              <i class="bi bi-person"></i> Pagador
+              <i class="bi bi-chevron-down chevron ms-auto"></i>
+            </button>
+            <div class="collapse" id="sub-pagador">
+              <a class="nav-link sub" href="#/pagador/criar" data-rota="pagador/criar">
+                <span class="metodo-mini bg-success">POST</span> Criar pagador
+              </a>
+              <a class="nav-link sub" href="#/pagador/consultar" data-rota="pagador/consultar">
+                <span class="metodo-mini bg-primary">GET</span> Consultar pagador
+              </a>
+              <a class="nav-link sub" href="#/pagador/listar" data-rota="pagador/listar">
+                <span class="metodo-mini bg-primary">GET</span> Listar pagadores
+              </a>
+              <a class="nav-link sub" href="#/pagador/atualizar" data-rota="pagador/atualizar">
+                <span class="metodo-mini bg-warning text-dark">PUT</span> Atualizar pagador
+              </a>
+              <a class="nav-link sub" href="#/pagador/desativar" data-rota="pagador/desativar">
+                <span class="metodo-mini bg-danger">DELETE</span> Desativar pagador
+              </a>
+            </div>
+          </div>
+
+          <div class="sidebar-grupo">Conta</div>
+          <a class="nav-link" href="#/conta" data-rota="conta">
+            <i class="bi bi-credit-card"></i> Conta
+            <span class="badge text-bg-secondary ms-auto">em breve</span>
+          </a>
+
+          <div class="sidebar-grupo">Extrato</div>
+          <a class="nav-link" href="#/extrato" data-rota="extrato">
+            <i class="bi bi-receipt"></i> Extrato
+            <span class="badge text-bg-secondary ms-auto">em breve</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Conteúdo -->
+    <main class="conteudo">
+      <div class="container-fluid">
+        <div id="conteudo"></div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -90,6 +90,22 @@
   Ou publicar (`dotnet publish`) e rodar o executável com `ASPNETCORE_ENVIRONMENT=Production` definido. O default do ASP.NET Core (sem env var) já é `Production`.
 - Testes de precedência da base de produção em `Tests/Api/ConfigurationExtensionsTests.cs` (3 novos, total 45 testes).
 
+### Documentação em HTML — `KodiakPlugBank.Docs/` (adicionado em 2026-08-02)
+- Site de documentação da API em **HTML5 + CSS + Bootstrap 5 + JavaScript**, independente do código .NET.
+- `index.html` (sidebar lateral com módulos **Pagador**, **Conta** e **Extrato**; offcanvas em telas menores), `css/styles.css`, `js/data.js` (conteúdo = fonte de verdade), `js/app.js` (renderização por hash: `#/pagador/criar` etc.).
+- **Pagador documentado** (POST/GET/GET list/PUT/DELETE); Conta e Extrato como placeholders "em breve".
+- Executar: abrir `index.html` ou servir com servidor estático (ex.: `python -m http.server`).
+- Contexto do projeto: `KodiakPlugBank.Docs/CONTEXTO.md`.
+- **Melhorias do menu (2026-08-02):** marca "Kodiak PlugBank" no header fixo (topbar), sidebar só com menu
+  (330px, sem truncamento), "Pagador" como acordeão (collapse `#sub-pagador`) e busca no menu.
+- **7 melhorias de usabilidade (2026-08-02):** seletor de ambiente (Homologação/Produção) que troca a base
+  `{base}` dos exemplos e o link do Swagger (persistido em localStorage); tema claro/escuro
+  (`data-bs-theme` + `bi-sun`/`bi-moon`); botões "Copiar" em todos os blocos de código
+  (`navigator.clipboard` com fallback); exemplos em abas **cURL / C# / PowerShell**; tabela
+  "Campos da resposta" (`respostaCampos`); busca filtrando o menu (inclui submenu); botão **Swagger**
+  visível somente no ambiente de homologação. Validado com `node --check` e teste jsdom (40 verificações,
+  0 falhas).
+
 ### Documentos úteis
 - `docs/ConfiguracaoBancoDados.md` — guia para preparar o banco de dados em **outras máquinas**
   (pré-requisitos, instalação automática via API ou manual via `psql`, connection string por variável
@@ -101,3 +117,4 @@
 ### Pendências / próximos passos
 - Configurar CnpjSh/TokenSh reais da TecnoSpeed antes de produção.
 - Liberar o IP da máquina/servidor na TecnoSped para acesso à API em produção (hoje retorna 403).
+- Documentar os módulos **Conta** e **Extrato** no site `KodiakPlugBank.Docs/` (em breve).
