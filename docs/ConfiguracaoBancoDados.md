@@ -84,7 +84,8 @@ O script `schema.sql` cria (usando `IF NOT EXISTS`, então é idempotente):
 - **`pagador`**
   - `id` (serial, PK), `nome`, `email`, `cpf_cnpj` (único), endereço (`logradouro`, `bairro`,
     `numero_endereco`, `complemento_endereco`, `cidade`, `estado`, `cep`),
-    `token`, `statement_ativado`, `chave_kodiak_extrato` (varchar 1000, opcional, não é usado para validação), `criado_em`.
+    `token`, `statement_ativado`, `ativo` (default true, usado no desativar pagador),
+    `chave_kodiak_extrato` (varchar 1000, opcional, não é usado para validação), `criado_em`.
 - **`conta_bancaria`**
   - `id` (serial, PK), `id_pagador` (FK), `id_conta_bancaria_kodiak` (único),
     `account_hash` (índice único parcial), dados bancários (`bank_code`, `agency`,

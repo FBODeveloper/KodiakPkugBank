@@ -117,6 +117,51 @@ public class PlugBankApiClientTests
     }
 
     [Fact]
+    public async Task DeveConsultarPagadorComPayercpfcnpj()
+    {
+        var handler = new StubHttpMessageHandler(_ => JsonResponse(HttpStatusCode.OK, """{"name":"Teste","token":"tok-1"}"""));
+        var client = BuildClient(handler);
+
+        var response = await client.GetPayerAsync("11111111000191", new PlugBankCredentials { CnpjSh = "s", TokenSh = "t" });
+
+        var request = handler.Requests.Single();
+        Assert.Equal(HttpMethod.Get, request.Method);
+        Assert.Equal("https://api.teste.com/api/v1/payer", request.RequestUri!.AbsoluteUri);
+        Assert.Equal("11111111000191", request.Headers.GetValues("payercpfcnpj").Single());
+        Assert.Equal("tok-1", response.Token);
+    }
+
+    [Fact]
+    public async Task DeveListarPagadoresSemPayercpfcnpj()
+    {
+        var handler = new StubHttpMessageHandler(_ => JsonResponse(HttpStatusCode.OK, """{"payers":[]}"""));
+        var client = BuildClient(handler);
+
+        var response = await client.ListPayersAsync(new PlugBankCredentials { CnpjSh = "s", TokenSh = "t" });
+
+        var request = handler.Requests.Single();
+        Assert.Equal("https://api.teste.com/api/v1/payer/list", request.RequestUri!.AbsoluteUri);
+        Assert.False(request.Headers.Contains("payercpfcnpj"));
+        Assert.Empty(response.Payers!);
+    }
+
+    [Fact]
+    public async Task DeveDesativarPagadorNaRotaToken()
+    {
+        var handler = new StubHttpMessageHandler(_ => JsonResponse(HttpStatusCode.OK, """{"active":false,"message":"Pagador desativado com sucesso"}"""));
+        var client = BuildClient(handler);
+
+        var response = await client.DisablePayerAsync("tok-1", new PlugBankCredentials { CnpjSh = "s", TokenSh = "t", PayerCpfCnpj = "11111111000191" });
+
+        var request = handler.Requests.Single();
+        Assert.Equal(HttpMethod.Delete, request.Method);
+        Assert.Equal("https://api.teste.com/api/v1/payer/tok-1", request.RequestUri!.AbsoluteUri);
+        Assert.Equal("11111111000191", request.Headers.GetValues("payercpfcnpj").Single());
+        Assert.False(response.Active);
+        Assert.Equal("Pagador desativado com sucesso", response.Message);
+    }
+
+    [Fact]
     public async Task DeveLancarPlugBankExceptionComErroDesserializado()
     {
         const string json = """

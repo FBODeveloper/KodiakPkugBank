@@ -12,9 +12,12 @@ CREATE TABLE IF NOT EXISTS pagador (
     cep                     VARCHAR(10),
     token                   VARCHAR(250),
     statement_ativado       BOOLEAN          NOT NULL DEFAULT FALSE,
+    ativo                   BOOLEAN          NOT NULL DEFAULT TRUE,
     chave_kodiak_extrato    VARCHAR(1000)    NOT NULL,
     criado_em               TIMESTAMP        NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE pagador ADD COLUMN IF NOT EXISTS ativo BOOLEAN NOT NULL DEFAULT TRUE;
 
 CREATE TABLE IF NOT EXISTS conta_bancaria (
     id                         SERIAL PRIMARY KEY,

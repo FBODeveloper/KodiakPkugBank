@@ -8,10 +8,10 @@
 ### Estrutura criada
 - Solução `KodiakPlugBank.slnx` (.NET 10) com 5 projetos:
   - `KodiakPlugBank.Core` — entidades (Pagador, ContaBancaria), contratos PlugBank (Payer, Account, OpenFinance), enums e interfaces (IPagadorRepository, IContaBancariaRepository, IPlugBankApi).
-  - `KodiakPlugBank.Application` — casos de uso (CriarPagador, ListarPagadores, ObterPagador, ObterPagadorPorCpfCnpj, AutenticarApikeyFixa, CriarConta, ListarContas, CriarExtrato, ObterExtrato) + Result/Result<T>.
+  - `KodiakPlugBank.Application` — casos de uso (CriarPagador, ConsultarPagadorPlugBank, ListarPagadoresPlugBank, AtualizarPagador, DesativarPagador, ObterPagadorPorCpfCnpj, AutenticarApikeyFixa, CriarConta, ListarContas, CriarExtrato, ObterExtrato) + Result/Result<T>.
   - `KodiakPlugBank.Infrastructure` — Dapper + Npgsql (repositórios, DbConnectionFactory, SchemaInitializer), cliente HTTP PlugBankApiClient, options (DatabaseOptions, PlugBankOptions), DI (AddInfrastructure).
-  - `KodiakPlugBank.Api` — Minimal API: middleware de autenticação via apikey (header `X-Api-Key`), endpoints `/api/v1/payer`, `/api/v1/account`, `/api/v1/statement/openfinance`, schema automático na inicialização.
-  - `KodiakPlugBank.Tests` — xUnit (25 testes): casos de uso com fakes, PlugBankApiClient (desserialização, headers, erros) e mapeamento de variáveis de ambiente.
+  - `KodiakPlugBank.Api` — Minimal API: middleware de autenticação via apikey (header `X-Api-Key`), endpoints `/api/v1/payer` (POST, GET, PUT, GET /list, DELETE /{tokenPayer}), `/api/v1/account`, `/api/v1/statement/openfinance`, schema automático na inicialização.
+  - `KodiakPlugBank.Tests` — xUnit (42 testes): casos de uso com fakes, PlugBankApiClient (desserialização, headers, erros) e mapeamento de variáveis de ambiente.
 - Pacotes: Dapper 2.1.79, Npgsql 10.0.3, Microsoft.OpenApi 2.7.5 (correção CVE-2026-49451), Swashbuckle.AspNetCore 10.2.3.
 - Documentação de uso via Swagger UI (somente em desenvolvimento): `/swagger` (UI) e `/swagger/v1/swagger.json` (JSON gerado pelo Swashbuckle). Substituiu o `MapOpenApi` nativo (`/openapi`). O middleware libera `/swagger` e `/openapi` como públicos; demais rotas exigem `X-Api-Key`.
 - Swagger UI com esquema de segurança "ApiKey" configurado (`SecuritySchemeType.ApiKey`, header `X-Api-Key`) — botão "Authorize" permite testar os endpoints informando a chave. Implementação usa `OpenApiSecuritySchemeReference` (Microsoft.OpenApi 2.x, Swashbuckle 10): `options.AddSecurityRequirement(document => new OpenApiSecurityRequirement { { new OpenApiSecuritySchemeReference("ApiKey", document), [] } })`.
@@ -31,7 +31,17 @@
   - `AutenticarPagadorUseCase` e `GetByChaveKodiakAsync` (interface/repo/fake) removidos.
   - `ChaveKodiakExtrato` deixou de ser obrigatória/validada no `CriarPagadorUseCase` (request agora `string?`; campo mantido no banco/entidade apenas como dado).
   - Endpoints de conta/extrato agora resolvem o pagador pelo header **`payercpfcnpj`** via `ObterPagadorPorCpfCnpjUseCase` (sem header → 401; pagador inexistente → 404).
-- 4 novos testes em `Tests/UseCases/AutenticarApikeyFixaUseCaseTests.cs` (total de 25 testes).
+- 4 novos testes em `Tests/UseCases/AutenticarApikeyFixaUseCaseTests.cs` (total de 42 testes).
+
+### Rotas de Pagador (Payer) — espelham a API PlugBank (adicionado em 2026-08-02)
+- `POST /api/v1/payer` — cadastra na PlugBank e no banco local (política de rate limit `bootstrap`).
+- `GET /api/v1/payer` — consulta um pagador na PlugBank (header `payercpfcnpj` obrigatório; vazio → 401).
+- `GET /api/v1/payer/list` — lista pagadores na PlugBank.
+- `PUT /api/v1/payer` — atualiza na PlugBank e sincroniza o banco local (header `payercpfcnpj`; resolve o pagador local, 404 se não existir; 409 se o novo CPF/CNPJ já pertencer a outro pagador).
+- `DELETE /api/v1/payer/{tokenPayer}` — desativa na PlugBank e marca o pagador local como inativo (coluna `ativo`); 404 se o `payercpfcnpj` não existir localmente.
+- **tokenPayer**: campo `token` retornado pela PlugBank no cadastro/consulta. É armazenado na coluna `pagador.token` no cadastro (usado futuramente para conta/extrato) e é o identificador da rota DELETE.
+- Contratos em `KodiakPlugBank.Core/PlugBank/Payer/` (CreatePayerRequest/Response, PayerConsultaResponse, PayerListResponse, AtualizarPayerResponse, DesativarPayerResponse).
+- Endpoints locais antigos removidos: listagem local (`GET /`) e obter por id (`GET /{id}`) junto com os use cases `ListarPagadoresUseCase`/`ObterPagadorUseCase`.
 
 ### Segurança (proteção contra DDoS) — adicionado em 2026-08-01
 - Rate limiting nativo (`Microsoft.AspNetCore.RateLimiting`, janela deslizante, partição por IP): política global 100 req/10s e política `bootstrap` (POST /api/v1/payer) 10 req/60s. Resposta 429 com `Retry-After`. Config em `appsettings.json` → `RateLimiting` (classe `KodiakPlugBank.Api/Security/RateLimitingExtensions.cs`).

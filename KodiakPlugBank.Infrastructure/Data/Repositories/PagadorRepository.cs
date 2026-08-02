@@ -16,13 +16,13 @@ public class PagadorRepository : IPagadorRepository
     private const string SelectColumns = @"
         id, nome, email, cpf_cnpj, logradouro, bairro, numero_endereco,
         complemento_endereco, cidade, estado, cep, token, statement_ativado,
-        chave_kodiak_extrato, criado_em";
+        ativo, chave_kodiak_extrato, criado_em";
 
     private const string InsertSql = @"
         INSERT INTO pagador (nome, email, cpf_cnpj, logradouro, bairro, numero_endereco,
-            complemento_endereco, cidade, estado, cep, token, statement_ativado, chave_kodiak_extrato)
+            complemento_endereco, cidade, estado, cep, token, statement_ativado, ativo, chave_kodiak_extrato)
         VALUES (@Nome, @Email, @CpfCnpj, @Logradouro, @Bairro, @NumeroEndereco,
-            @ComplementoEndereco, @Cidade, @Estado, @Cep, @Token, @StatementAtivado, @ChaveKodiakExtrato)
+            @ComplementoEndereco, @Cidade, @Estado, @Cep, @Token, @StatementAtivado, @Ativo, @ChaveKodiakExtrato)
         RETURNING id;";
 
     private static Pagador Map(PagadorRow row) => new()
@@ -40,6 +40,7 @@ public class PagadorRepository : IPagadorRepository
         Cep = row.Cep ?? string.Empty,
         Token = row.Token,
         StatementAtivado = row.StatementAtivado,
+        Ativo = row.Ativo,
         ChaveKodiakExtrato = row.ChaveKodiakExtrato
     };
 
@@ -88,7 +89,7 @@ public class PagadorRepository : IPagadorRepository
                 nome = @Nome, email = @Email, cpf_cnpj = @CpfCnpj, logradouro = @Logradouro,
                 bairro = @Bairro, numero_endereco = @NumeroEndereco, complemento_endereco = @ComplementoEndereco,
                 cidade = @Cidade, estado = @Estado, cep = @Cep, token = @Token,
-                statement_ativado = @StatementAtivado, chave_kodiak_extrato = @ChaveKodiakExtrato
+                statement_ativado = @StatementAtivado, ativo = @Ativo, chave_kodiak_extrato = @ChaveKodiakExtrato
             WHERE id = @Id;
             """, pagador, cancellationToken: cancellationToken));
     }
@@ -109,5 +110,6 @@ public class PagadorRow
     public string? Cep { get; set; }
     public string? Token { get; set; }
     public bool StatementAtivado { get; set; }
+    public bool Ativo { get; set; }
     public string ChaveKodiakExtrato { get; set; } = string.Empty;
 }

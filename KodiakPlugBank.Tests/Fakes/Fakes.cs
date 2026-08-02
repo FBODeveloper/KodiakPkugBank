@@ -30,7 +30,12 @@ public class FakePagadorRepository : IPagadorRepository
     }
 
     public Task UpdateAsync(Pagador pagador, CancellationToken cancellationToken = default)
-        => Task.CompletedTask;
+    {
+        var indice = Data.FindIndex(p => p.Id == pagador.Id);
+        if (indice >= 0)
+            Data[indice] = pagador;
+        return Task.CompletedTask;
+    }
 }
 
 public class FakeContaBancariaRepository : IContaBancariaRepository
@@ -72,6 +77,10 @@ public class FakeApikeyFixaRepository : IApikeyFixaRepository
 public class FakePlugBankApi : IPlugBankApi
 {
     public Func<CreatePayerRequest, PlugBankCredentials, Task<CreatePayerResponse>>? PayerHandler { get; set; }
+    public Func<string, PlugBankCredentials, Task<PayerConsultaResponse>>? GetPayerHandler { get; set; }
+    public Func<PlugBankCredentials, Task<PayerListResponse>>? ListPayersHandler { get; set; }
+    public Func<CreatePayerRequest, PlugBankCredentials, Task<AtualizarPayerResponse>>? UpdatePayerHandler { get; set; }
+    public Func<string, PlugBankCredentials, Task<DesativarPayerResponse>>? DisablePayerHandler { get; set; }
     public Func<IReadOnlyList<CreateAccountItemRequest>, PlugBankCredentials, Task<CreateAccountResponse>>? AccountHandler { get; set; }
     public Func<CreateStatementRequest, PlugBankCredentials, Task<CreateStatementResponse>>? StatementHandler { get; set; }
     public Func<string, PlugBankCredentials, Task<StatementDocument>>? GetStatementHandler { get; set; }
@@ -82,6 +91,38 @@ public class FakePlugBankApi : IPlugBankApi
             Name = request.Name,
             CpfCnpj = request.CpfCnpj,
             Token = "token-plugbank"
+        });
+
+    public Task<PayerConsultaResponse> GetPayerAsync(string payerCpfCnpj, PlugBankCredentials credentials, CancellationToken cancellationToken = default)
+        => GetPayerHandler?.Invoke(payerCpfCnpj, credentials) ?? Task.FromResult(new PayerConsultaResponse
+        {
+            Name = "Pagador Teste",
+            CpfCnpj = payerCpfCnpj,
+            Token = "token-consulta"
+        });
+
+    public Task<PayerListResponse> ListPayersAsync(PlugBankCredentials credentials, CancellationToken cancellationToken = default)
+        => ListPayersHandler?.Invoke(credentials) ?? Task.FromResult(new PayerListResponse
+        {
+            Payers = new List<PayerListItem>
+            {
+                new() { Name = "Pagador Teste", CpfCnpj = "11111111000191", Token = "token-consulta" }
+            }
+        });
+
+    public Task<AtualizarPayerResponse> UpdatePayerAsync(CreatePayerRequest request, PlugBankCredentials credentials, CancellationToken cancellationToken = default)
+        => UpdatePayerHandler?.Invoke(request, credentials) ?? Task.FromResult(new AtualizarPayerResponse
+        {
+            Name = request.Name,
+            CpfCnpj = request.CpfCnpj,
+            StatementActived = request.StatementActived
+        });
+
+    public Task<DesativarPayerResponse> DisablePayerAsync(string tokenPayer, PlugBankCredentials credentials, CancellationToken cancellationToken = default)
+        => DisablePayerHandler?.Invoke(tokenPayer, credentials) ?? Task.FromResult(new DesativarPayerResponse
+        {
+            Active = false,
+            Message = "Pagador desativado com sucesso"
         });
 
     public Task<CreateAccountResponse> CreateAccountAsync(IReadOnlyList<CreateAccountItemRequest> request, PlugBankCredentials credentials, CancellationToken cancellationToken = default)

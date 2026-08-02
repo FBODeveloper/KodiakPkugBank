@@ -33,6 +33,22 @@ public class PlugBankApiClient : IPlugBankApi
         => SendAsync<CreatePayerRequest, CreatePayerResponse>(
             HttpMethod.Post, "/api/v1/payer", request, credentials, cancellationToken);
 
+    public Task<PayerConsultaResponse> GetPayerAsync(string payerCpfCnpj, PlugBankCredentials credentials, CancellationToken cancellationToken = default)
+        => SendAsync<object, PayerConsultaResponse>(
+            HttpMethod.Get, "/api/v1/payer", null, WithPayer(credentials, payerCpfCnpj), cancellationToken);
+
+    public Task<PayerListResponse> ListPayersAsync(PlugBankCredentials credentials, CancellationToken cancellationToken = default)
+        => SendAsync<object, PayerListResponse>(
+            HttpMethod.Get, "/api/v1/payer/list", null, credentials, cancellationToken);
+
+    public Task<AtualizarPayerResponse> UpdatePayerAsync(CreatePayerRequest request, PlugBankCredentials credentials, CancellationToken cancellationToken = default)
+        => SendAsync<CreatePayerRequest, AtualizarPayerResponse>(
+            HttpMethod.Put, "/api/v1/payer", request, credentials, cancellationToken);
+
+    public Task<DesativarPayerResponse> DisablePayerAsync(string tokenPayer, PlugBankCredentials credentials, CancellationToken cancellationToken = default)
+        => SendAsync<object, DesativarPayerResponse>(
+            HttpMethod.Delete, $"/api/v1/payer/{Uri.EscapeDataString(tokenPayer)}", null, credentials, cancellationToken);
+
     public Task<CreateAccountResponse> CreateAccountAsync(IReadOnlyList<CreateAccountItemRequest> request, PlugBankCredentials credentials, CancellationToken cancellationToken = default)
         => SendAsync<IReadOnlyList<CreateAccountItemRequest>, CreateAccountResponse>(
             HttpMethod.Post, "/api/v1/account", request, credentials, cancellationToken);
@@ -44,6 +60,13 @@ public class PlugBankApiClient : IPlugBankApi
     public Task<StatementDocument> GetStatementAsync(string uniqueId, PlugBankCredentials credentials, CancellationToken cancellationToken = default)
         => SendAsync<object, StatementDocument>(
             HttpMethod.Get, $"/api/v1/statement/openfinance/{uniqueId}", null, credentials, cancellationToken);
+
+    private static PlugBankCredentials WithPayer(PlugBankCredentials credentials, string payerCpfCnpj) => new()
+    {
+        CnpjSh = credentials.CnpjSh,
+        TokenSh = credentials.TokenSh,
+        PayerCpfCnpj = payerCpfCnpj
+    };
 
     private async Task<TResponse> SendAsync<TRequest, TResponse>(
         HttpMethod method,

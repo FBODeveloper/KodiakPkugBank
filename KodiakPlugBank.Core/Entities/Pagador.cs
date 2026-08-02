@@ -15,5 +15,6 @@ public class Pagador
     public string Cep { get; set; } = string.Empty;
     public string? Token { get; set; }
     public bool StatementAtivado { get; set; }
+    public bool Ativo { get; set; } = true;
     public string ChaveKodiakExtrato { get; set; } = string.Empty;
 }
